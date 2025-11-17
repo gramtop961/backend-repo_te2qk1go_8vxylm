@@ -11,8 +11,8 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, HttpUrl
+from typing import Optional, List
 
 # Example schemas (replace with your own):
 
@@ -38,11 +38,19 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
-
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+# iPad product catalog schema (used by the app)
+class IPad(BaseModel):
+    """
+    iPad models collection schema
+    Collection name: "ipad"
+    """
+    name: str = Field(..., description="Marketing name, e.g., iPad Pro 11")
+    generation: Optional[str] = Field(None, description="Generation label, e.g., 4th gen")
+    chip: str = Field(..., description="Chipset, e.g., M4, M2, A14 Bionic")
+    display_size: float = Field(..., gt=0, description="Display size in inches, e.g., 11.0")
+    storage_options: List[int] = Field(default_factory=list, description="Available storage sizes in GB")
+    base_price: float = Field(..., ge=0, description="Base model starting price in USD")
+    colors: List[str] = Field(default_factory=list, description="Available colors")
+    supports_pencil: Optional[str] = Field(None, description="Apple Pencil support, e.g., Gen 2, USB-C Pencil")
+    cellular: bool = Field(False, description="Has cellular variants")
+    image_url: Optional[HttpUrl] = Field(None, description="Product image URL")
